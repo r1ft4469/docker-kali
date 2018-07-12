@@ -99,7 +99,7 @@ RUN curl http://fastandeasyhacking.com/download/armitage150813.tgz \
 # && rm -rf /var/lib/apt/lists
 # COPY dradis/oscp.html.erb /pentest/dradis-ce/templates/reports/html_export/
 
-RUN git clone https://github.com/brimstone/SecLists /pentest/seclists --depth 1 \
+RUN git clone https://github.com/danielmiessler/SecLists /pentest/seclists --depth 1 \
  && rm -rf /pentest/seclists/.git \
  && git clone https://github.com/FireFart/msfpayloadgenerator /pentest/msfpayloadgenerator --depth 1 \
  && rm -rf /pentest/msfpayloadgenerator/.git \
@@ -114,10 +114,6 @@ COPY bin/* /usr/local/bin/
 COPY lists /pentest/lists
 
 COPY scripts/* /root/.msf4/
-
-RUN git clone https://github.com/brimstone/metasploit-modules /root/.msf4/modules
-
-RUN git clone https://github.com/brimstone/post-brimstone-harden /root/.msf4/modules/post/brimstone/harden
 
 COPY share /pentest/share
 

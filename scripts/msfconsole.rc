@@ -1,4 +1,4 @@
-setg prompt  %D   %L   %S   %J 
+setg prompt "%blu %D  %red %L  %grn %S  %J "
 
 load alias
 alias s "sessions -i"
