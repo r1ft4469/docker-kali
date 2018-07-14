@@ -27,7 +27,7 @@ RUN /usr/local/sbin/pax-pre-install --install \
  && apt update \
  && apt install -y --no-install-recommends \
     less vim build-essential libreadline-dev libssl-dev libpq5 \
-    libpq-dev libreadline5 libsqlite3-dev libpcap-dev \
+    libpq-dev libreadline5 libsqlite3-dev libpcap-dev tmux \
     subversion git-core autoconf pgadmin3 curl zlib1g-dev libxml2-dev \
     libxslt1-dev xtightvncviewer libyaml-dev ruby ruby-dev nmap beef-xss \
     mitmproxy postgresql python-pefile net-tools iputils-ping iptables \
@@ -79,26 +79,6 @@ RUN /usr/bin/msfinstall \
 RUN curl http://fastandeasyhacking.com/download/armitage150813.tgz \
   | tar -zxC /pentest/
 
-# Dradis breaks because of json 1.8.3 and ruby 2.4
-#RUN apt update \
-# && apt install -y --no-install-recommends \
-#    libsqlite3-dev redis-server libmariadbclient-dev-compat \
-# && git clone https://github.com/dradis/dradis-ce.git /pentest/dradis-ce/ -b release-3.7 --depth 1 \
-# && cd /pentest/dradis-ce/ \
-# && echo "gem 'dradis-pdf_export', '~> 3.7', github: 'dradis/dradis-pdf_export'" >> Gemfile.plugins.template \
-# && bundle install --path /pentest/dradis-ce/ \
-# && bin/setup \
-# && wget https://dradisframework.com/academy/files/dradis-ce_compliance_package-oscp.v0.3.zip \
-# && mkdir -p templates/notes templates/reports/html_export \
-# && unzip -j dradis-ce_compliance_package-oscp.v0.3.zip dradis-ce_compliance_package-oscp.v0.3/dradis-export-oscp.zip -d public/ \
-# && echo 'Maybe try the <a href="/dradis-export-oscp.zip">oscp project</a>?' >> app/views/upload/index.html.erb \
-# && unzip -j dradis-ce_compliance_package-oscp.v0.3.zip dradis-ce_compliance_package-oscp.v0.3/\*txt -d templates/notes/ \
-# && rm templates/notes/instructions.txt \
-# && rm dradis-ce_compliance_package-oscp.v0.3.zip \
-# && apt clean \
-# && rm -rf /var/lib/apt/lists
-# COPY dradis/oscp.html.erb /pentest/dradis-ce/templates/reports/html_export/
-
 RUN git clone https://github.com/danielmiessler/SecLists /pentest/seclists --depth 1 \
  && rm -rf /pentest/seclists/.git \
  && git clone https://github.com/FireFart/msfpayloadgenerator /pentest/msfpayloadgenerator --depth 1 \
@@ -121,4 +101,4 @@ RUN msfcache build
 
 EXPOSE 80 443 4444
 
-WORKDIR /pentest
+WORKDIR /pentest/Desktop

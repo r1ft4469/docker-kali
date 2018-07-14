@@ -27,4 +27,4 @@ if [ -n "${LIF:-}" ]; then
 	export LHOST
 fi
 
-exec /usr/bin/msfconsole -x "set -g CHOST 0.0.0.0; set -g LHOST ${LHOST:-0.0.0.0};" "$@"
+exec /usr/bin/msfconsole -x "set -g CHOST 0.0.0.0" "$@"
