@@ -2,7 +2,8 @@
 
 function print_help { echo "docker_start.sh -d <Folder for console desktop> -n <network iface> -p <exploit port> -w [Windows Payload] -l [Linux Payoad]" -o [OSX Payload] >&2 ; } 
 
-while getopts d:n:p:wlo option
+		
+while getopts d:n:p:uwlo option
 do
 	case "${option}" in
 		d)
@@ -14,6 +15,9 @@ do
 			;;
 		p) 
 			exploitport=$OPTARG
+			;;
+		u)
+			shellupgradeport=$OPTARG
 			;;
 		w)
 			winpay=1
@@ -27,7 +31,10 @@ do
 		?) print_help; exit 2;;
 	esac
 done
-shellupgradeport=4433
+
+if [ -z $shellupgradeport ]; then
+	shellupgradeport=4433
+fi
 
 # start bash ports forwarding and shared folders
 msf="$(docker run -d -t \
@@ -65,15 +72,38 @@ if [ -n "$osxpay" ]; then
 		-c "chmod +x /pentest/Desktop/shell.command"
 fi
 
-# set LHOST to containers host IP
+# setup msfconsole startup
+docker exec -t $msf /bin/bash \
+	-c "echo alias upgrade 'use post/multi/manage/shell_to_meterpreter LPORT=$shellupgradeport' >> /root/.msf4/msfconsole.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo set lport $exploitport >> /root/.msf4/linpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo exploit -j >> /root/.msf4/linpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo set lport $exploitport >> /root/.msf4/winpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo exploit -j >> /root/.msf4/winpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo set lport $exploitport >> /root/.msf4/osxpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo exploit -j >> /root/.msf4/osxpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo clear >> /root/.msf4/msfconsole.rc"
 docker exec -t $msf /bin/bash \
 	-c "echo set -g LHOST $hostip >> /root/.msf4/msfconsole.rc"
 
-# run msfconsole in tmux
+# run msfconsole
 docker exec -ti $msf msf 
 
 # cleanup
 docker container stop $msf
 docker container rm $msf
 rm $desktopfolder/shell*
-
+desktopfolder=''
+netiface=''
+hostip=''
+exploitport=''
+shellupgradeport=''
+winpay=''
+linpay=''
+osxpay=''
