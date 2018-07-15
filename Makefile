@@ -1,2 +1,2 @@
 latest: Dockerfile
-	docker build -t brimstone/kali .
+	docker build -t pennoser/msf .
