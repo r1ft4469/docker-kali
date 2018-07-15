@@ -1,5 +1,5 @@
-set -g prompt "%grn %L > %blu %D > %yel %S  %J"
-set -g PromptChar " %yel%clr "
+set -g prompt "%whi    %grn%H  %blu %D  %yel %S  %J"
+set -g PromptChar " %whi%clr"
 
 load alias
 alias s "sessions -i"
