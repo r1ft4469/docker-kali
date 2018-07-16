@@ -27,7 +27,7 @@ RUN /usr/local/sbin/pax-pre-install --install \
  && apt update \
  && apt install -y --no-install-recommends \
     less vim build-essential libreadline-dev libssl-dev libpq5 \
-    libpq-dev libreadline5 libsqlite3-dev libpcap-dev tmux \
+    libpq-dev libreadline5 libsqlite3-dev libpcap-dev \
     subversion git-core autoconf pgadmin3 curl zlib1g-dev libxml2-dev \
     libxslt1-dev xtightvncviewer libyaml-dev ruby ruby-dev nmap beef-xss \
     mitmproxy postgresql python-pefile net-tools iputils-ping iptables \
@@ -85,7 +85,7 @@ RUN git clone https://github.com/danielmiessler/SecLists /pentest/seclists --dep
  && rm -rf /pentest/msfpayloadgenerator/.git \
  && wget https://github.com/Charliedean/NetcatUP/raw/master/netcatup.sh -O /bin/netcatup.sh \
  && git clone https://github.com/derv82/wifite /opt/wifite --depth 1 \
- && ln -s /opt/wifite/wifite.py /sbin/wifite
+ && ln -s /opt/wifite/wifite.py /sbin/wifite 
 
 RUN wpscan --update
 

