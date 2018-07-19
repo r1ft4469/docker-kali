@@ -32,7 +32,7 @@ RUN /usr/local/sbin/pax-pre-install --install \
     libxslt1-dev xtightvncviewer libyaml-dev ruby ruby-dev nmap beef-xss \
     mitmproxy postgresql python-pefile net-tools iputils-ping iptables \
     sqlmap bettercap bdfproxy rsync enum4linux openssh-client \
-	mfoc mfcuk libnfc-bin hydra nikto wpscan weevely netcat-traditional \
+    mfoc mfcuk libnfc-bin hydra nikto wpscan weevely netcat-traditional \
     aircrack-ng pyrit cowpatty pciutils kmod wget unicornscan ftp wfuzz \
     python-pip moreutils \
  && apt clean \
@@ -47,6 +47,18 @@ RUN apt update \
 	burpsuite openjdk-8-jre zaproxy exploitdb \
  && apt clean \
  && rm -rf /var/lib/apt/lists
+
+# Setup Node.js
+RUN apt install checkinstall \
+ && src=$(mktemp -d) && cd $src \
+ && wget -N http://nodejs.org/dist/node-latest.tar.gz \
+ && tar xzvf node-latest.tar.gz && cd node-v* \
+ && ./configure
+ && checkinstall -y --install=no --pkgversion $(echo $(pwd) \
+	| sed -n -re's/.+node-v(.+)$/\1/p') make -j$(($(nproc)+1)) install \
+ && dpkg -i node_*
+ && cd /
+ %% rm -rf $src
 
 RUN gem install wirble sqlite3 bundler \
  && mkdir /pentest
@@ -97,8 +109,12 @@ COPY scripts/* /root/.msf4/
 
 COPY share /pentest/share
 
+COPY node_server /pentest/node_servr
+
+RUN ln -s /pentest/Desktop/Server /pentest/node_server/public
+
 RUN msfcache build
 
-EXPOSE 80 443 4444
+EXPOSE 80 443 4444 4433 4469
 
 WORKDIR /pentest/Desktop
