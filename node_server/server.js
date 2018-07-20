@@ -45,24 +45,20 @@ app.get('/',
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/' }),
 	function(req, res) {
-		//res.redirect('/shell');
-		res.redirect('/', express.static(__dirname + '/public'));
+		res.redirect('/dashboard');
 	});
 app.get('/logout',
 	function(req, res){
 		req.logout();
 		res.redirect('/');
 	});
-
-app.get('/shell',
+app.get('/files',
+	res.redirect('public/files');
+	);
+app.get('/dashboard',
 	require('connect-ensure-login').ensureLoggedIn(),
 	function(req, res){
 		res.render('shell', { user: req.user });
-		const testFolder = './public/hostedfiles/';
-		const fs = require('fs');
-
-		fs.readdirSync(testFolder).forEach(file => {
-		console.log(file);
 		})
 	});
 

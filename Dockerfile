@@ -53,11 +53,11 @@ RUN apt install checkinstall \
  && src=$(mktemp -d) && cd $src \
  && wget -N http://nodejs.org/dist/node-latest.tar.gz \
  && tar xzvf node-latest.tar.gz && cd node-v* \
- && ./configure
+ && ./configure \
  && checkinstall -y --install=no --pkgversion $(echo $(pwd) \
 	| sed -n -re's/.+node-v(.+)$/\1/p') make -j$(($(nproc)+1)) install \
- && dpkg -i node_*
- && cd /
+ && dpkg -i node_* \
+ && cd / \
  %% rm -rf $src
 
 RUN gem install wirble sqlite3 bundler \
