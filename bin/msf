@@ -19,7 +19,7 @@ ln -s /certs/payloads.json /root/.msf4/payloads.json
 
 cd /pentest/node_server
 node /pentest/node_server/server.js &
-cd ~
+cd /pentest/Desktop
 
 service postgresql start
 until psql -h 127.0.0.1 msf msf -c '\q'; do
