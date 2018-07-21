@@ -1,8 +1,10 @@
 var express = require('express');
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
+var serveIndex = require('serve-index')
 var db = require('./db');
 var app = express();
+
 
 const lport = 80
 
@@ -37,29 +39,34 @@ app.use(require('express-session')({ secret: 'keyboard cat', resave: false, save
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('public'))
+app.use('/files', express.static('public/files'), serveIndex('public/files', {'icons': true}))
 
 app.get('/',
 	function(req, res) {
 		res.render('home', { user: req.user });
 	});
+
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/' }),
 	function(req, res) {
 		res.redirect('/dashboard');
 	});
+
+app.get('/login',
+	function(req, res) {
+		req.redirect('/');
+	});
+
 app.get('/logout',
-	function(req, res){
+	function(req, res) {
 		req.logout();
 		res.redirect('/');
 	});
-app.get('/files',
-	res.redirect('public/files');
-	);
+
 app.get('/dashboard',
 	require('connect-ensure-login').ensureLoggedIn(),
-	function(req, res){
+	function(req, res) {
 		res.render('shell', { user: req.user });
-		})
 	});
 
 app.listen(lport, (err) => {
@@ -67,6 +74,6 @@ app.listen(lport, (err) => {
 		return console.log('something bad happened', err)
 	};
 
-	console.log(`server is listening on ${lport}`)
+	console.log(`server is listening on ${lport}`);
 });
 
