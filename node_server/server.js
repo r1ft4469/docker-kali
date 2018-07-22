@@ -38,7 +38,12 @@ app.use(require('body-parser').urlencoded({ extended: true }));
 app.use(require('express-session')({ secret: 'keyboard cat', resave: false, saveUninitialized: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(express.static('public'))
+app.use(express.static('public'));
+
+app.use('/files', 
+	require('connect-ensure-login').ensureLoggedIn(), 
+	express.static('../Desktop'), 
+	serveIndex('../Desktop', {'icons': true}));
 
 app.get('/',
 	function(req, res) {
@@ -67,11 +72,6 @@ app.get('/dashboard',
 	function(req, res) {
 		res.render('shell', { user: req.user });
 	});
-
-app.get('/files',
-	require('connect-ensure-login').ensureLoggedIn(),
-	serveIndex('files', {'icons': true})
-	);
 
 app.listen(lport, (err) => {
 	if (err) {
