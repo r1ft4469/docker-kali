@@ -39,7 +39,6 @@ app.use(require('express-session')({ secret: 'keyboard cat', resave: false, save
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('public'))
-app.use('/files', express.static('public/files'), serveIndex('public/files', {'icons': true}))
 
 app.get('/',
 	function(req, res) {
@@ -54,7 +53,7 @@ app.post('/',
 
 app.get('/login',
 	function(req, res) {
-		req.redirect('/');
+		res.redirect('/');
 	});
 
 app.get('/logout',
@@ -68,6 +67,11 @@ app.get('/dashboard',
 	function(req, res) {
 		res.render('shell', { user: req.user });
 	});
+
+app.get('/files',
+	require('connect-ensure-login').ensureLoggedIn(),
+	serveIndex('../Desktop', {'icons': true})
+	);
 
 app.listen(lport, (err) => {
 	if (err) {
