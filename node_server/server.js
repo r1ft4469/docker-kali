@@ -70,7 +70,7 @@ app.get('/dashboard',
 
 app.get('/files',
 	require('connect-ensure-login').ensureLoggedIn(),
-	serveIndex('../Desktop', {'icons': true})
+	serveIndex('files', {'icons': true})
 	);
 
 app.listen(lport, (err) => {
