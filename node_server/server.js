@@ -3,9 +3,13 @@ var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var serveIndex = require('serve-index')
 var db = require('./db');
+var os = require("os");
 var app = express();
+var proxy = require('http-proxy').createProxyServer({
+	host: 'http://localhost:3000',
+	});
 
-
+const execSync = require('child_process').execSync;
 const lport = 80
 
 passport.use(new Strategy(
@@ -53,6 +57,13 @@ app.get('/',
 app.post('/', 
 	passport.authenticate('local', { failureRedirect: '/' }),
 	function(req, res) {
+		res.redirect('/dashboard');
+	});
+
+app.get('/beef',
+	function(req, res) {
+		beefservice = execSync('service beef-xss start');
+		beefstart = execSync('beef-xss');
 		res.redirect('/dashboard');
 	});
 
