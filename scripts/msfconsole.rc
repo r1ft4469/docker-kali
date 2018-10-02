@@ -8,6 +8,7 @@ alias j "jobs -l"
 alias win_payload "resource /root/.msf4/winpay.rc"
 alias lin_payload "resource /root/.msf4/linpay.rc"
 alias osx_payload "resource /root/.msf4/osxpay.rc"
+alias android_payload "resource /root/.msf4/andpay.rc"
 alias make-https "resource /root/.msf4/https.rc"
 alias make-nc "resource /root/.msf4/nc-listen.rc"
 
