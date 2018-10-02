@@ -1,7 +1,7 @@
 alias msfconsole='msf_start'
 function msf_start() {
-
-while getopts d:n:p:uwlo option
+tmux rename-window -t${TMUX_PANE} "msfconsole"
+while getopts d:n:p:huwlo option
 do
 	case "${option}" in
 		d)
@@ -36,7 +36,7 @@ do
 			echo "-w	<Windows Reverse Lisener>"
 			echo "-l	<Linux Reverse Lisener>"
 			echo "-o	<OSX Reverse Lisener>"
-			exit 0
+			return 0
 			;;
 	esac
 done
