@@ -1,6 +1,8 @@
 alias msfconsole='msf_start'
 function msf_start() {
-tmux rename-window -t${TMUX_PANE} "msfconsole"
+tmuxwindowname=$(tmux display-message -p '#W')
+tmux rename-window -t${TMUX_PANE} "msf"
+tmuxwindownamebuild=$(tmux display-message -p '#W')
 while getopts d:n:p:huwlo option
 do
 	case "${option}" in
@@ -19,12 +21,15 @@ do
 			;;
 		w)
 			winpay=1
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" win"
 			;;
 		l)
 			linpay=1
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" lin"
 			;;
 		o)
 			osxpay=1
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" osx"
 			;;
 		h)
 			echo "msfconsole docker image start script help"
@@ -36,6 +41,7 @@ do
 			echo "-w	<Windows Reverse Lisener>"
 			echo "-l	<Linux Reverse Lisener>"
 			echo "-o	<OSX Reverse Lisener>"
+			tmux rename-window -t${TMUX_PANE} $tmuxwindowname
 			return 0
 			;;
 	esac
@@ -45,6 +51,7 @@ if [ -z $shellupgradeport ]; then
 	shellupgradeport=4433
 fi
 
+tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" p="$(echo $exploitport)" u="$(echo $shellupgradeport)
 # start bash ports forwarding and shared folders
 msf="$(docker run -d -t \
 	-p $exploitport:$exploitport \
@@ -119,5 +126,6 @@ shellupgradeport=''
 winpay=''
 linpay=''
 osxpay=''
+tmux rename-window -t${TMUX_PANE} $tmuxwindowname
 }
 
