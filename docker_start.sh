@@ -21,15 +21,15 @@ do
 			;;
 		w)
 			winpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" win"
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [win]"
 			;;
 		l)
 			linpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" lin"
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [lin]"
 			;;
 		o)
 			osxpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" osx"
+			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [osx]"
 			;;
 		h)
 			echo "msfconsole docker image start script help"
@@ -51,7 +51,9 @@ if [ -z $shellupgradeport ]; then
 	shellupgradeport=4433
 fi
 
-tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" p="$(echo $exploitport)" u="$(echo $shellupgradeport)
+tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" (p="$(echo $exploitport)" u="$(echo $shellupgradeport)")"
+tmux rename-window -t${TMUX_PANE} $tmuxwindownamebuild
+
 # start bash ports forwarding and shared folders
 msf="$(docker run -d -t \
 	-p $exploitport:$exploitport \
