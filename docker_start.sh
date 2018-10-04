@@ -66,7 +66,7 @@ msf="$(docker run -d -t \
 	-p $shellupgradeport:$shellupgradeport \
 	-p 443:443 \
 	-v $desktopfolder:/pentest/Desktop \
-	pennoser/msf:latest /bin/bash)"
+	pennoser/production:latest /bin/bash)"
 
 # build basic reverse payloads for host
 if [ -n "$andpay" ]; then
@@ -127,6 +127,10 @@ docker exec -t $msf /bin/bash \
 	-c "echo clear >> /root/.msf4/msfconsole.rc"
 docker exec -t $msf /bin/bash \
 	-c "echo set -g LHOST $hostip >> /root/.msf4/msfconsole.rc"
+
+# setup Apache
+docker exec -t $msf /bin/bash \
+	-c "service apache2 start"
 
 # run msfconsole
 docker exec -ti $msf msf 
