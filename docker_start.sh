@@ -66,7 +66,7 @@ msf="$(docker run -d -t \
 	-p $shellupgradeport:$shellupgradeport \
 	-p 443:443 \
 	-v $desktopfolder:/pentest/Desktop \
-	pennoser/msf:latest /bin/bash)"
+	pennoser/production:latest /bin/bash)"
 
 # build basic reverse payloads for host
 if [ -n "$andpay" ]; then
