@@ -34,12 +34,17 @@ RUN /usr/local/sbin/pax-pre-install --install \
     sqlmap bettercap bdfproxy rsync enum4linux openssh-client \
     mfoc mfcuk libnfc-bin hydra nikto wpscan weevely netcat-traditional \
     aircrack-ng pyrit cowpatty pciutils kmod wget unicornscan ftp wfuzz \
-    python-pip moreutils \
+    python-pip moreutils apache2 \
  && apt clean \
  && rm -rf /var/lib/apt/lists \
  && curl https://github.com/brimstone/gobuster/releases/download/1.3-opt/gobuster \
     -Lo /usr/bin/gobuster \
  && chmod 755 /usr/bin/gobuster
+
+ RUN echo 'deb http://ftp.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/strech-backports.list \
+ && apt update \
+ && apt install -y --no-install-recommends \
+	python-certbot-apache -t stretch-backports
 
 # I'm trying to split up this layer so it's more palatable to download
 RUN apt update \
@@ -87,8 +92,6 @@ RUN git clone https://github.com/danielmiessler/SecLists /pentest/seclists --dep
  && git clone https://github.com/derv82/wifite /opt/wifite --depth 1 \
  && ln -s /opt/wifite/wifite.py /sbin/wifite 
 
-RUN wpscan --update
-
 COPY bin/* /usr/local/bin/
 
 COPY lists /pentest/lists
@@ -99,19 +102,15 @@ COPY share /pentest/share
 
 RUN msfcache build
 
-# Setup Node.js
-RUN apt install -y --no-install-recommends \
-	file checkinstall \
- && src=$(mktemp -d) && cd $src \
- && wget -N http://nodejs.org/dist/node-latest.tar.gz \
- && tar xzvf node-latest.tar.gz && cd node-v* \
- && ./configure \
- && checkinstall -y --install=no --pkgversion $(echo $(pwd) \
-	| sed -n -re's/.+node-v(.+)$/\1/p') make -j$(($(nproc)+1)) install \
- && dpkg -i node_* \
- && cd / \
- %% rm -rf $src
-COPY node_server /pentest/node_server
+COPY site /pentest/site
+
+COPY ninjacloud.net.conf /etc/apache2/sites-available/
+
+RUN mkdir -p /var/www/ninjacloud.net \
+ && ln -s /pentest/site /var/www/ninjacloud.net/public_html \
+ && chmod -R 755 /var/www \
+ && a2dissite 000-default \
+ && a2ensite ninjacloud.net
 
 EXPOSE 80 443 4444 4433 4469
 
