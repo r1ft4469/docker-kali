@@ -22,7 +22,7 @@ RUN /usr/local/sbin/pax-pre-install --install \
  && echo "deb-src http://http.kali.org/kali kali-rolling main contrib non-free" \
     >> /etc/apt/sources.list.d/kali.list \
  && for tries in 1 2 3 4; do \
-      apt-key adv --keyserver pgp.mit.edu --recv-keys ED444FF07D8D0BF6 || sleep 2 \
+      apt-key adv --no-tty --keyserver pgp.mit.edu --recv-keys ED444FF07D8D0BF6 || sleep 2 \
   ; done \
  && apt update \
  && apt install -y --no-install-recommends \
@@ -46,7 +46,6 @@ RUN /usr/local/sbin/pax-pre-install --install \
  && apt install -y --no-install-recommends \
 	python-certbot-apache -t stretch-backports
 
-# I'm trying to split up this layer so it's more palatable to download
 RUN apt update \
  && apt install -y --no-install-recommends \
 	burpsuite openjdk-8-jre zaproxy exploitdb \
@@ -61,8 +60,6 @@ RUN sed -i 's/md5$/trust/g' /etc/postgresql/*/main/pg_hba.conf \
  && su -c "createuser msf -S -R -D \
  && createdb -O msf msf" postgres
 
-# Update metasploit the hard way
-# There's something dumb about what the package does to work with system ruby
 COPY msfinstall /usr/bin/msfinstall
 
 RUN /usr/bin/msfinstall \
@@ -77,9 +74,7 @@ RUN /usr/bin/msfinstall \
  && echo " host: 127.0.0.1" >> $MSF_DATABASE_CONFIG \
  && echo " port: 5432" >> $MSF_DATABASE_CONFIG \
  && echo " pool: 75" >> $MSF_DATABASE_CONFIG \
- && echo " timeout: 5" >> $MSF_DATABASE_CONFIG \
- && curl -L https://raw.githubusercontent.com/darkoperator/Metasploit-Plugins/master/pentest.rb \
-    > /pentest/metasploit-framework/embedded/framework/plugins/pentest.rb
+ && echo " timeout: 5" >> $MSF_DATABASE_CONFIG
 
 RUN curl http://fastandeasyhacking.com/download/armitage150813.tgz \
   | tar -zxC /pentest/
@@ -100,18 +95,24 @@ COPY scripts/* /root/.msf4/
 
 COPY share /pentest/share
 
-RUN msfcache build
+COPY config.yaml /etc/beef-xss/config.yaml
 
-COPY site /pentest/site
+#RUN msfcache build
 
-COPY ninjacloud.net.conf /etc/apache2/sites-available/
-
-RUN mkdir -p /var/www/ninjacloud.net \
- && ln -s /pentest/site /var/www/ninjacloud.net/public_html \
- && chmod -R 755 /var/www \
- && a2dissite 000-default \
- && a2ensite ninjacloud.net
+#RUN curl -L https://raw.githubusercontent.com/darkoperator/Metasploit-Plugins/master/pentest.rb \
+#	> /root/.msf4/plugins/pentest.rb
 
 EXPOSE 80 443 4444 4433 4469
 
 WORKDIR /pentest/Desktop
+
+COPY site /pentest/site
+
+COPY site.conf /etc/apache2/sites-available/
+
+RUN mkdir -p /var/www/site \
+ && ln -s /pentest/site /var/www/site/public_html \
+ && chmod -R 755 /var/www \
+ && a2dissite 000-default 
+
+COPY digitalocean.ini /pentest/digitalocean.ini

