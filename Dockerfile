@@ -18,6 +18,8 @@ COPY bin/* /usr/local/bin/
 
 COPY scripts/* /root/.msf4/
 
+COPY tmux.conf /root/.tmux.conf
+
 RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
 WORKDIR /root
