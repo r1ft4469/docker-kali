@@ -2,9 +2,8 @@
 set -euo pipefail
 
 service postgresql start
-until psql -h 127.0.0.1 msf msf -c '\q'; do
-	sleep 2
-done
+
+msfdb reinit 2>/dev/null
 
 if [ -n "${LIF:-}" ]; then
 	LHOST="$(ifdata -pa "$LIF")"
