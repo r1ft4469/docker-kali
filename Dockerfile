@@ -36,7 +36,7 @@ RUN apt update \
 # && rm -rf /pentest/msfpayloadgenerator/.git \
 # && wget https://github.com/Charliedean/NetcatUP/raw/master/netcatup.sh -O /bin/netcatup.sh
 
-# COPY bin/* /usr/local/bin/
+COPY bin/* /usr/local/bin/
 
 COPY scripts/* /root/.msf4/
 
