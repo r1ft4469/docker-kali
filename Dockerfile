@@ -19,7 +19,8 @@ COPY bin/* /usr/local/bin/
 COPY scripts/* /root/.msf4/
 
 COPY tmux.conf /root/.tmux.conf
-COPY theme.tmux /root/.theme.tmux
+COPY xresource-powerline.tmuxtheme /root/.xresource-powerline.tmuxtheme
+COPY Xresources /root/.Xresources
 
 RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
