@@ -20,4 +20,4 @@ COPY scripts/* /root/.msf4/
 
 RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
-WORKDIR /root`
+WORKDIR /root
