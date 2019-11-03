@@ -1,6 +1,0 @@
-msfadmin msfadmin
-postgres postgres
-service service
-klog 123456789
-user user
-sys batman
