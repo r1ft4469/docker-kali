@@ -11,17 +11,25 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 	  
 RUN apt update \
  && apt upgrade -y \
- && apt install -y postgresql metasploit-framework neovim tmux nmap sqlmap apache2 beef-xss \
+# && apt install -y postgresql metasploit-framework neovim tmux nmap sqlmap apache2 beef-xss \
  && apt clean
-	
+
+RUN apt update \
+  && apt install -y --no-install-recommends \
+  	postgresql metasploit-framework\
+  	tmux nmap sqlmap apache2 beef-xss \
+  && apt install -y neovim \
+  && apt clean
+
 COPY bin/* /usr/local/bin/
 
 COPY scripts/* /root/.msf4/
+RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
 COPY tmux.conf /root/.tmux.conf
-#COPY xresource-powerline.tmuxtheme /root/.xresource-powerline.tmuxtheme
-#COPY Xresources /root/.Xresources
 
-RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
+COPY nvim/* /root/.config/nvim/
+RUN  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+  && nvim --headless +PlugInstall +qa
 
 WORKDIR /root
