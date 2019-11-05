@@ -11,7 +11,6 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
 	  
 RUN apt update \
  && apt upgrade -y \
-# && apt install -y postgresql metasploit-framework neovim tmux nmap sqlmap apache2 beef-xss \
  && apt clean
 
 RUN apt update \
