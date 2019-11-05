@@ -26,8 +26,6 @@ splitRight () {
 }
 
 smartSplit () {
-    # Menlo and Menlo for Powerline appear to have a 4:9 width:height ratio
-    # adjust the coefficients to suite your font
     local ROWS=$(tmux display-message -p '#{pane_height}')
     local COLS=$(tmux display-message -p '#{pane_width}')
     if [ $((ROWS*9)) -lt $((COLS*4)) ]; then

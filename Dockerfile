@@ -13,13 +13,6 @@ RUN apt update \
  && apt upgrade -y \
  && apt clean
 
-#RUN apt update \
-#  && apt install -y --no-install-recommends \
-#  	postgresql metasploit-framework\
-#  	tmux nmap sqlmap apache2 beef-xss \
-#  && apt install -y neovim \
-#  && apt clean
-
 RUN apt update \
   && apt install -y --no-install-recommends \
 	postgresql \
