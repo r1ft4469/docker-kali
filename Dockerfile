@@ -21,7 +21,7 @@ RUN apt update \
 RUN apt update \
   && apt install -y --no-install-recommends \
   	metasploit-framework \
-  && apt clean
+  && apt clean 
 
 RUN apt update \
   && apt install -y --no-install-recommends \ 
@@ -45,18 +45,20 @@ RUN apt update \
 
 RUN apt update \
   && apt install -y neovim \
-  && apt clean
+  && apt clean \
+  && curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs \
+	https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+  && nvim --headless +PlugInstall +qa
 
 
 COPY bin/* /usr/local/bin/
 
 COPY scripts/* /root/.msf4/
+
 RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
-COPY tmux.conf /root/.tmux.conf
+COPY configs/tmux.conf /root/.tmux.conf
 
-COPY nvim/* /root/.config/nvim/
-RUN  curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
-  && nvim --headless +PlugInstall +qa
+COPY configs/init.vim /root/.config/nvim/init.vim
 
 WORKDIR /root
