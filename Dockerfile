@@ -43,6 +43,8 @@ RUN apt update \
   	beef-xss \
   && apt clean
 
+COPY configs/init.vim /root/.config/nvim/init.vim
+
 RUN apt update \
   && apt install -y neovim \
   && apt clean \
@@ -58,7 +60,5 @@ COPY scripts/* /root/.msf4/
 RUN ln -s /usr/share/metasploit-framework/config/database.yml /root/.msf4/
 
 COPY configs/tmux.conf /root/.tmux.conf
-
-COPY configs/init.vim /root/.config/nvim/init.vim
 
 WORKDIR /root
