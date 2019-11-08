@@ -38,11 +38,6 @@ RUN apt update \
   	apache2 \
   && apt clean
 
-RUN apt update \
-  && apt install -y --no-install-recommends \
-  	beef-xss \
-  && apt clean
-
 COPY configs/init.vim /root/.config/nvim/init.vim
 
 RUN apt update \
