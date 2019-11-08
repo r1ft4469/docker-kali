@@ -25,7 +25,7 @@ RUN apt update \
 
 RUN apt update \
   && apt install -y --no-install-recommends \ 
-	tmux nmap \
+	tmux nmap net-tools iputils-ping whois\
   && apt clean
 
 RUN apt update \
