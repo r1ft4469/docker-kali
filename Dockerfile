@@ -25,8 +25,8 @@ RUN apt update \
 
 RUN apt update \
   && dpkg --add-architecture i386 \
-  && apt install -y --no-install-recommends \
-  	libwine shellter \
+  && apt install -y --no-install-recommends shellter \
+  && apt install -y --no-install-recommends wine32 \
   && apt clean
 
 RUN apt update \
