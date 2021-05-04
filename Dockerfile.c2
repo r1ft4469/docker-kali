@@ -1,6 +1,6 @@
 #FROM alxchk/pupy:unstable as pupy
 
-FROM brimstone/kali:latest
+FROM pennoser/msf:latest
 
 RUN apt update \
  && apt install -y --no-install-recommends \
@@ -61,7 +61,7 @@ RUN wget https://github.com/evilsocket/shellz/releases/download/v1.5.0/shellz_1.
 # msf python
 RUN apt update \
  && apt install -y --no-install-recommends \
-    python3-pip python3-setuptools \
+    python3-pip python3-setuptools default-jdk \
  && apt clean \
  && rm -rf /var/lib/apt/lists \
  && pip3 install pymetasploit3
@@ -122,6 +122,8 @@ RUN apt update \
 RUN curl https://github.com/brimstone/gobuster/releases/download/1.3-opt/gobuster \
     -Lo /usr/bin/gobuster \
  && chmod 755 /usr/bin/gobuster
+
+COPY scripts/* /root/.msf4/
 
 # TODO /usr/share/beef-xss /usr/share/beef-xss/beef
 

