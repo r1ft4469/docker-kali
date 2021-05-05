@@ -114,12 +114,6 @@ RUN rm -rf /root/.msf4 \
 
 RUN apt update \
  && apt install -y --no-install-recommends \
-	veil \
- && /usr/share/veil/config/setup.sh --force --silent
-
-
-RUN apt update \
- && apt install -y --no-install-recommends \
 	mitmproxy sqlmap nikto beef-xss bettercap ffuf wpscan \
     default-mysql-client \
  && apt clean \
