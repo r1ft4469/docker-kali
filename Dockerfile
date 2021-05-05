@@ -114,12 +114,16 @@ RUN rm -rf /root/.msf4 \
 
 RUN apt update \
  && apt install -y --no-install-recommends \
-	mitmproxy sqlmap nikto beef-xss bettercap ffuf wpscan veil \
+	veil \
+ && /usr/share/veil/config/setup.sh --force --silent
+
+
+RUN apt update \
+ && apt install -y --no-install-recommends \
+	mitmproxy sqlmap nikto beef-xss bettercap ffuf wpscan \
     default-mysql-client \
  && apt clean \
  && rm -rf /var/lib/apt/lists 
-
-RUN /usr/share/veil/config/setup.sh --force --silent
 
 RUN curl https://github.com/brimstone/gobuster/releases/download/1.3-opt/gobuster \
     -Lo /usr/bin/gobuster \
