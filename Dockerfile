@@ -115,9 +115,19 @@ RUN rm -rf /root/.msf4 \
 RUN apt update \
  && apt install -y --no-install-recommends \
 	mitmproxy sqlmap nikto beef-xss bettercap ffuf wpscan \
-    default-mysql-client \
- && apt clean \
- && rm -rf /var/lib/apt/lists 
+    default-mysql-client mingw-w64 \
+ && apt clean 
+
+RUN git clone https://github.com/persianhydra/Xeexe-TopAntivirusEvasion.git \
+ && dpkg --add-architecture i386 && apt update \
+ && apt install -y --no-install-recommends wine32 \
+ && cd Xeexe-TopAntivirusEvasion \
+ && sed -i 's/sudo //' ./install.sh \
+ && sed -i 's/exit 1/exit 0/' ./install.sh \
+ && chmod +x ./install.sh \
+ && ./install.sh \
+ && chmod +x Xeexe.py\
+ && apt clean
 
 RUN curl https://github.com/brimstone/gobuster/releases/download/1.3-opt/gobuster \
     -Lo /usr/bin/gobuster \

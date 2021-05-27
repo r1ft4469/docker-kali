@@ -14,5 +14,6 @@ alias listen-nc "resource /root/.msf4/listen-nc.rc"
 alias listen-https "resource /root/.msf4/listen-https.rc"
 alias listen-http "resource /root/.msf4/listen-http.rc"
 alias backup "resource /root/.msf4/backup.rc"
+alias xeexe "python3 /pentest/Xeexe-TopAntivirusEvasion/Xeexe.py"
 
 set -g ExitOnSession false
